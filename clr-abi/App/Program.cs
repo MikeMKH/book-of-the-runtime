@@ -48,6 +48,16 @@ namespace App
 		    IL_0063: call string [System.Runtime]System.String::Format(string, object)
 		    IL_0068: call void [System.Console]System.Console::WriteLine(string)
             */
+						
+						app.TryCatchTest();
+						app.TryCatchFinallyTest();
+						/*
+		    IL_0071: ldloc.00
+		    IL_0072: callvirt instance void App.Program::TryCatchTest()
+		    IL_0077: ldloc.00
+		    IL_0078: callvirt instance void App.Program::TryCatchFinallyTest()
+		    IL_007d: ret
+						*/
         }
         
         static float FloatAdder(float x, float y) => x + y;
@@ -126,6 +136,161 @@ namespace App
 	    	IL_0021: call !!1 [System.Linq]System.Linq.Enumerable::Aggregate<int32, int32>(class [System.Runtime]System.Collections.Generic.IEnumerable`1<!!0>, !!1, class [System.Runtime]System.Func`3<!!1, !!0, !!1>)
 	    	IL_0026: ret
 	    } // end of method Program::Summer
-            */
+          */
+				  public void TryCatchTest() {
+            try {
+                try {
+                    throw new ArgumentException(
+											System.Threading.Thread.CurrentThread.ManagedThreadId.ToString());
+                }
+                catch (ArgumentException e){
+                    Console.WriteLine("ArgumentException was caught");
+                    throw new ArgumentException(
+											System.Threading.Thread.CurrentThread.ManagedThreadId.ToString());
+                }
+            }
+            catch (ArgumentException e) {
+                Console.WriteLine("ArgumentException was caught");
+            }
+          }
+					/*
+	    .method public hidebysig 
+	    	instance void TryCatchTest () cil managed 
+	    {
+	    	// Method begins at RVA 0x211c
+	    	// Code size 73 (0x49)
+	    	.maxstack 1
+	    	.locals init (
+	    		[0] int32
+	    	)
+    
+	    	.try
+	    	{
+	    		.try
+	    		{
+	    			IL_0000: call class [System.Threading.Thread]System.Threading.Thread [System.Threading.Thread]System.Threading.Thread::get_CurrentThread()
+	    			IL_0005: callvirt instance int32 [System.Threading.Thread]System.Threading.Thread::get_ManagedThreadId()
+	    			IL_000a: stloc.00
+	    			IL_000b: ldloca.s 0
+	    			IL_000d: call instance string [System.Runtime]System.Int32::ToString()
+	    			IL_0012: newobj instance void [System.Runtime]System.ArgumentException::.ctor(string)
+	    			IL_0017: throw
+	    		} // end .try
+	    		catch [System.Runtime]System.ArgumentException
+	    		{
+	    			IL_0018: pop
+	    			IL_0019: ldstr "ArgumentException was caught"
+	    			IL_001e: call void [System.Console]System.Console::WriteLine(string)
+	    			IL_0023: call class [System.Threading.Thread]System.Threading.Thread [System.Threading.Thread]System.Threading.Thread::get_CurrentThread()
+	    			IL_0028: callvirt instance int32 [System.Threading.Thread]System.Threading.Thread::get_ManagedThreadId()
+	    			IL_002d: stloc.00
+	    			IL_002e: ldloca.s 0
+	    			IL_0030: call instance string [System.Runtime]System.Int32::ToString()
+	    			IL_0035: newobj instance void [System.Runtime]System.ArgumentException::.ctor(string)
+	    			IL_003a: throw
+	    		} // end handler
+	    	} // end .try
+	    	catch [System.Runtime]System.ArgumentException
+	    	{
+	    		IL_003b: pop
+	    		IL_003c: ldstr "ArgumentException was caught"
+	    		IL_0041: call void [System.Console]System.Console::WriteLine(string)
+	    		IL_0046: leave.s IL_0048
+	    	} // end handler
+    
+	    	IL_0048: ret
+	    } // end of method Program::TryCatchTest
+					*/
+					public void TryCatchFinallyTest()
+					{
+						var zero = 0;
+						try
+						{
+							var x = 5 / zero;
+							try
+							{
+								var y = 6 / zero;
+								try
+								{
+									var z = 7 / zero;
+								}
+								catch
+								{
+									Console.WriteLine("Inner Catch");
+								}
+							}
+							finally
+							{
+								Console.WriteLine("Inner Finally");
+							}
+						}
+						catch
+						{
+							Console.WriteLine("Outter Catch");
+						}
+					}
+					/*
+	    .method public hidebysig 
+	    	instance void TryCatchFinallyTest () cil managed 
+	    {
+	    	// Method begins at RVA 0x2194
+	    	// Code size 58 (0x3a)
+	    	.maxstack 2
+	    	.locals init (
+	    		[0] int32
+	    	)
+    
+	    	IL_0000: ldc.i4.0
+	    	IL_0001: stloc.00
+	    	.try
+	    	{
+	    		IL_0002: ldc.i4.5
+	    		IL_0003: ldloc.00
+	    		IL_0004: div
+	    		IL_0005: pop
+	    		.try
+	    		{
+	    			IL_0006: ldc.i4.6
+	    			IL_0007: ldloc.00
+	    			IL_0008: div
+	    			IL_0009: pop
+	    			.try
+	    			{
+	    				IL_000a: ldc.i4.7
+	    				IL_000b: ldloc.00
+	    				IL_000c: div
+	    				IL_000d: pop
+	    				IL_000e: leave.s IL_001d
+	    			} // end .try
+	    			catch [System.Runtime]System.Object
+	    			{
+	    				IL_0010: pop
+	    				IL_0011: ldstr "Inner Catch"
+	    				IL_0016: call void [System.Console]System.Console::WriteLine(string)
+	    				IL_001b: leave.s IL_001d
+	    			} // end handler
+    
+	    			IL_001d: leave.s IL_002a
+	    		} // end .try
+	    		finally
+	    		{
+	    			IL_001f: ldstr "Inner Finally"
+	    			IL_0024: call void [System.Console]System.Console::WriteLine(string)
+	    			IL_0029: endfinally
+	    		} // end handler
+    
+	    		IL_002a: leave.s IL_0039
+	    	} // end .try
+	    	catch [System.Runtime]System.Object
+	    	{
+	    		IL_002c: pop
+	    		IL_002d: ldstr "Outter Catch"
+	    		IL_0032: call void [System.Console]System.Console::WriteLine(string)
+	    		IL_0037: leave.s IL_0039
+	    	} // end handler
+    
+	    	IL_0039: ret
+	    } // end of method Program::TryCatchFinallyTest
+					*/
     }
 }
